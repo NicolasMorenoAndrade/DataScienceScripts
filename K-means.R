@@ -5,11 +5,14 @@ load("~/Desktop/DataScience/Scripts/data/kmeansSwirl.RData")
 
 # Intuition - Centroids by hand -------------------------------------------
 
-# plot initial (guessed) centroids
-points(cx,cy,col=c( "red", "orange", "purple"), pch=3, cex=2,lwd=2)
-
 dataFrame$x -> x
 dataFrame$y -> y
+
+# plot initial (guessed) centroids
+plot.new()
+
+points(cx,cy,col=c( "red", "orange", "purple"), pch=3, cex=2,lwd=2)
+
 
 mdist <- function(x,y,cx,cy)
 {
