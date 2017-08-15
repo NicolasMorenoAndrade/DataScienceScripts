@@ -1,0 +1,117 @@
+\documentclass{article}
+\usepackage{mathtools}
+
+\renewcommand{\abstractname}{Overview}
+
+\begin{document}
+%\SweaveOpts{concordance=TRUE}
+
+<<setup, cache=FALSE,include=FALSE>>=
+# global chunk options
+opts_chunk$set(cache=TRUE, autodep=TRUE)
+@
+
+
+<<load, cache=TRUE, echo=FALSE, warning=FALSE, message=FALSE,include=FALSE>>=
+library(knitr)
+library(ggplot2)
+library(plyr)
+library(reshape2)
+library(RColorBrewer)
+@
+
+
+\title{Statistical Inference Project 2 Part 1}
+\author{Nicolas Moreno Andrade}
+% \date{}
+\maketitle
+\begin{abstract}
+In this project we will investigate the exponential distribution in R and compare it with the Central Limit Theorem. In particular we'll calculate the mean of 1000 simulated data sets each containing 40 samples of an exponential distribution. According to the Central Limit Theorem, the distribution of these means should approximate that of a normal distribution. By comparing the theoretical and simulated mean and variance and by plotting relevant figures we'll conclude that the simulated data conforms to the expectation of the Central Limit Theorem. 
+\end{abstract}
+
+\section{Simulations}
+
+The exponential distribution is simulated in R with \textbf{rexp(n,lambda)}, where $\lambda=0.2$, sample size n is 40, and the number of simulations is 1000. The 1000 sample means are stored in simMeans.
+
+<<simulations, results='asis', echo=TRUE, tidy=TRUE, cache=TRUE, warning=FALSE, results='markup'>>=
+set.seed(9) # we set a seed for reproducibility
+
+# set constants
+lambda <- 0.2 # lambda for rexp
+n <- 40 # number of exponentials
+nsim <- 1000 # number of simulations
+
+# store the results of the test in  a nsim * n  matrix
+simMatrix <- matrix(data=rexp(n * nsim, rate = lambda), nsim)
+# compute the mean of each simulation
+simMeans <- rowMeans(simMatrix)
+head(simMeans)
+@
+
+\section{Theoretical vs simulated mean and variance}
+
+The exponential distribution has the following probability density function:
+  
+\begin{equation*}
+f(x;\lambda) =
+\begin{cases}
+\lambda e^{-\lambda x} & x\geq 0\\
+0 &  x<0
+\end{cases}
+\end{equation*}
+
+With mean $\lambda^{-1}$ and variance $\lambda^{-2}$. Since we are taking $\lambda = 0.2$ in our case, according to the Central Limit Theorem the theoretical mean of the distribution of averages is also  $\mu = \lambda^{-1}$, that is:  $\mu =$ \Sexpr{lambda^(-1)}. Now we compute the average of our simulated means:
+
+<<>>=
+simulatedavg <- round(mean(simMeans),3)
+simulatedavg
+@
+
+On the other hand, according to the Central Limit Theorem, the theoretical value of the variance of the distribution of averages from an exponential is $\displaystyle{\frac{\lambda^{-2}}{n}}$. In R we compute the theoretical and simulated variances as follows:
+
+<<>>=
+theorvar  <- lambda^(-2) / n
+simvar <- var(simMeans)
+theorvar
+simvar
+@
+
+We see that the mean from the averages (\Sexpr{simulatedavg}) is quite similar to the theoretical mean ($\mu=5$). Also the simulated variance and the theoretical variance are quite close.
+
+\section{Distribution}
+
+In figure \ref{fig:density} we plotted the histogram of the mean of our 1000 simulations. The vertical lines show how the theoretical mean of the distribution is almost identical to the simulated mean. The curves are the density lines corresponding to normal distributions with mean and standard deviation corresponding to our theoretical and simulated values. We readily see that the distribution closely resembles that of a normal distribution. Finally we verify this by plotting the Q-Q for quantiles (figure \ref{fig:qqplot})to verify that the sample quantiles match the theoretical quantiles.
+
+After examining the plots, we conclude that the distribution of means of simulated samples closely resembles that of a normal distribution.
+
+<<density, fig.cap='Distribution of the simulated means', fig.height=5, fig.width=8, echo=TRUE, cache=TRUE,warning=FALSE>>=
+# plot the means
+mu = lambda^(-1)
+ggplot(data = data.frame(simMeans), aes(x = simMeans)) + 
+geom_histogram(binwidth=0.1, 
+               aes(y=..density..), 
+               fill="lightblue") +   
+geom_vline(aes(xintercept=mu, 
+               color="Theoretical Mean"))+
+geom_vline(aes(xintercept=simulatedavg, 
+               color="Simulated Mean"))+
+stat_function(fun = dnorm, 
+              args = list(mean = simulatedavg, sd = sqrt(simvar)),
+              color = "red", size = 1.0)+
+stat_function(fun = dnorm, 
+              args = list(mean = mu, sd = sqrt(theorvar)), 
+              color = "blue", size = 1.0)+
+xlab("Simulated Means")+
+theme(legend.position = "top")
+@
+
+
+<<qqplot, fig.cap='The points lie mostly on the line so the distribution has the same shape as the thoretical distribution', fig.height=5, fig.width=8, echo=TRUE>>=
+# use qqplot and qqline to compare the distribution of averages of 40 exponentials
+# to a normal distribution
+qqnorm(simMeans)
+qqline(simMeans, col = 2)
+@
+
+  
+\end{document}

@@ -1,0 +1,106 @@
+\documentclass{article}
+\usepackage{mathtools}
+
+\renewcommand{\abstractname}{Overview}
+
+\begin{document}
+%\SweaveOpts{concordance=TRUE}
+
+<<setup, cache=FALSE,include=FALSE>>=
+# global chunk options
+opts_chunk$set(cache=TRUE, autodep=TRUE)
+@
+
+
+<<load, cache=TRUE, echo=FALSE, warning=FALSE, message=FALSE,include=FALSE>>=
+library(knitr)
+library(ggplot2)
+library(plyr)
+library(reshape2)
+library(RColorBrewer)
+data("ToothGrowth")
+@
+
+
+\title{Statistical Inference Project 2 Part 2}
+\author{Nicolas Moreno Andrade}
+% \date{}
+\maketitle
+\begin{abstract}
+In this project we will study the ToothGrowth data set. This set contains data about the effect of vitamin C in tooth growth (measured by length) of guinea pigs. We'll perform some exploratory data analysis by performing quick summaries and drawing boxplots by dose level and delivery method. Additionaly t-tests will be run in order to confirm the relationships seen in the plots. At the end we will conclude that there is a positive and significant relationship between tooth growth and ingestion of vitamin C and no relationship with delivery method.   
+\end{abstract}
+
+\section{Basic Summary of Data}
+
+The ToothGrowth data contains 60 observations of length of odontoblasts (cells responsible for tooth growth) in guinea pigs. Each animal received one of three dose levels of vitamin C (0.5, 1, and 2 mg/day) by one of two delivery methods, (orange juice or ascorbic acid (a form of vitamin C and coded as VC). 
+
+The following are basic summaries of the data: 
+<<summary1, results='asis', echo=TRUE, tidy=TRUE, cache=TRUE, warning=FALSE, results='markup'>>=
+summary(ToothGrowth)
+dim(ToothGrowth)
+table(ToothGrowth$dose, ToothGrowth$supp)
+str(ToothGrowth)
+@
+
+\section{Analysis}
+<<boxplot2, fig.cap='Boxplot comparing delivery methods by tooth length', fig.height=5, fig.width=8, echo=TRUE, cache=TRUE,warning=FALSE, fig.pos='h'>>=
+# boxplot delivery methods
+ggplot(aes(x=supp, y=len), data=ToothGrowth) + 
+  geom_boxplot(aes(fill=supp))+ 
+        xlab("Supplement type") +ylab("Tooth length") +
+  scale_fill_discrete(name="Delivery Method")
+@
+
+Based on this boxplot we see that dividing the observations just by delivery method doesn't seem to show relevant differences in tooth growth length. To confirm this we perform a t-test:
+
+<<ttestsupp, echo=TRUE>>=
+t.test(len ~ supp, paired = FALSE, var.equal = FALSE, data = ToothGrowth)
+@
+
+The confidence interval contains 0 and the p-value is greater than 0.05 so we fail to reject the null hypothesis. There is no significant difference in tooth length between the group that received the vitamin C in orange juice and the group that received it in the form of ascorbic acid.
+
+<<boxplot1, fig.cap='Boxplot comparing dose by tooth length', fig.height=5, fig.width=8, echo=TRUE, out.extra = '', fig.pos='h',cache=TRUE,warning=FALSE>>=
+# boxplot dose
+ggplot(aes(x=factor(dose), y=len), data=ToothGrowth) + 
+  geom_boxplot(aes(fill=factor(dose)))+ 
+        xlab("Dose") +ylab("Tooth length") +
+  scale_fill_discrete(name="Dose Level")
+@
+
+The boxplot indicates that there could be a relationship between dosage and tooth length. The bigger the dose we see longer teeth in the animals.
+
+We now perform a t-test for each dose level:
+
+<<>>=
+dose05vsdose1 <- ToothGrowth[ToothGrowth$dose %in% c(0.5, 1.0), ]
+dose05vsdose2 <- ToothGrowth[ToothGrowth$dose %in% c(0.5, 2.0), ]
+dose1vsdose2 <- ToothGrowth[ToothGrowth$dose %in% c(1.0, 2.0), ]
+t.test(len ~ dose, paired = FALSE, var.equal = FALSE, data = dose05vsdose1)
+@
+
+<<>>=
+t.test(len ~ dose, paired = FALSE, var.equal = FALSE, data = dose05vsdose2)
+@
+
+<<>>=
+t.test(len ~ dose, paired = FALSE, var.equal = FALSE, data = dose1vsdose2)
+@
+
+
+The three t-tests show similar results. The confidence intervals do not contain 0 and the p-value is very small (almost 0). We conclude that the mean tooth length increases with larger dose levels. 
+
+\section{Conclusions}
+\begin{enumerate}
+\item The data indicates that, in guinea pigs,  mean tooth length increases with larger dose levels of vitamin C.
+\item The delivery method does not seem to have a relationship with mean growth length.
+\end{enumerate}
+
+\section{Assumptions}
+\begin{enumerate}
+\item The 60 guinea pigs are a representative sample of the population of the guinea pigs.
+\item We assumed unequal variance for the t-tests.
+\end{enumerate}
+
+
+  
+\end{document}

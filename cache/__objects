@@ -1,0 +1,12 @@
+load	ToothGrowth
+simulations	lambda	n	nsim	simMatrix	simMeans	.Random.seed
+rkgcalBcontrato	mu
+unnamed-chunk-1	dose05vsdose1	dose05vsdose2	dose1vsdose2
+unnamed-chunk-2	
+unnamed-chunk-3	
+density	
+qqplot	
+summary1	
+boxplot1	
+boxplot2	.Random.seed
+ttestsupp	

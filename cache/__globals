@@ -1,0 +1,12 @@
+load	library	knitr	ggplot2	plyr	reshape2	RColorBrewer	data
+simulations	set.seed	lambda	n	nsim	simMatrix	matrix	rexp	simMeans	rowMeans	head
+rkgcalBcontrato	mu	lambda	ggplot	data.frame	simMeans	aes	geom_histogram	..density..	geom_vline	simulatedavg	stat_function	dnorm	list	sqrt	simvar	theorvar
+unnamed-chunk-1	dose05vsdose1	ToothGrowth	dose	%in%	c	dose05vsdose2	dose1vsdose2	t.test	len
+unnamed-chunk-2	t.test	len	dose	dose05vsdose2
+unnamed-chunk-3	t.test	len	dose	dose1vsdose2
+density	
+qqplot	qqnorm	simMeans	qqline
+summary1	summary	ToothGrowth	dim	table	dose	supp	str
+boxplot1	ggplot	aes	factor	dose	len	ToothGrowth	geom_boxplot	xlab	ylab	scale_fill_discrete
+boxplot2	ggplot	aes	supp	len	ToothGrowth	geom_boxplot	xlab	ylab	scale_fill_discrete
+ttestsupp	t.test	len	supp	ToothGrowth
