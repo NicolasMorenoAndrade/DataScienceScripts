@@ -1,8 +1,10 @@
 ---
-title: "Motor Trend Analysis"
-author: "NicolasM"
+    title: "Fuel Consumption in Automatic and Manual Transmission Cars"
+author: "Nicolas Moreno"
 date: "September 11, 2017"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -11,36 +13,106 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Executive Summary
 
-blah blah blah
+This project uses the "mtcars" dataset in order to answer the following question:
+
+* Is an automatic or manual transmission better for fuel consumption?
+
+To answer this question we will first compare the mean of the "mpg" variable  (miles per gallon) for automatic and manual transmissions. We'll perform a T-test to check if the difference in mean is statistically significant. After we check that, we'll fit different linear models with the aim of finding the model that best accounts for the variability in fuel consumption. Finally, once we find such model, we will check the model assumptios: normality of the residuals and homoscedasticity.  
+
 
 ## Process the Data
+
+From the documentation of the "mtcars" dataset we get a succint description of the data:
+"the data was extracted from the 1974 Motor Trend US magazine, and comprises fuel consumption and 10 aspects of automobile design and performance for 32 automobiles (1973–74 models)".
+
+In order to perform the relevant analysis we first change the variable "am" to a factor with two levels: "Automatic" and "Manual"
 
 ```{r cars}
 library(datasets)
 library(ggplot2)
 data(mtcars)
-```
-
-## Exploratory Data Analysis
-
-Start with a summary
-
-```{r exploratory}
-summary(mtcars)
-
 #change am variable to factor
 mtcars$am <- as.factor(mtcars$am)
 levels(mtcars$am) <-c("Automatic", "Manual")
 ```
 
+## Exploratory Data Analysis
 
+We start the analysis by computing the mean of "mpg" for each transmission type:
 
-```{r boxplot, fig.height=4}
+```{r exploratory}
+mean(mtcars[mtcars$am=="Automatic","mpg"])
+mean(mtcars[mtcars$am=="Manual","mpg"])
+```
+
+The cars with manual transmission have a higher mean of miles per gallon. We check that this difference seems to be significant with the following boxplot:
+
+```{r boxplot, fig.height=4, echo=FALSE}
 g <- ggplot(data = mtcars, aes(x=as.factor(am),y=mpg, fill=as.factor(am)))
 g <- g + geom_boxplot()
+g <- g + scale_fill_discrete(name="Transmission")
+g <- g + xlab("Transmission")
+g <- g + ylab("Miles per Gallon")
 print(g)
 ```
+
+### Difference in means
+
+The Boxplot indeed points to a difference in means of "mpg". We proceed to test the hypothesis that the means are equal with a T-test:  
+
 
 ```{r ttest}
 t.test(mtcars$mpg~mtcars$am,conf.level=0.95)
 ```
+
+The p-value is 0.001374 so we reject the null hypothesis. There seems to be a true difference in mpg mean between cars with automatic transmission and cars with manual transmission. However this conclussion is based on the assumption that all other characteristics of the cars are equal (# of cylinders, weight etc) and certainly this is not the case. Thus we need to perform further analysis by fitting a few linear models.
+
+### Regression Models
+
+We start by fitting the simplest possible model: Miles per Gallon (mpg) explained by Transmission Type (am):
+
+```{r lmmpgvsam}
+fit1 <- lm(mpg ~ am, data = mtcars)
+coef(fit1)
+summary(fit1)$r.squared
+```
+
+Both coefficients of the model are statistically significant (small p-values). The intercept of the model is just the mean miles per gallon for cars with automatic transmission. The slope of the regression line indicates an average increase of 7.245  miles per gallon for cars with manual transmission. The R-squared, however, indicates that roughly just 36% of the variation is explained by this model. This seems natural since some other variables such as weight, number of cylinders, number of carburators etc could also influence the fuel consumption. Having that in mind we now fit a model mpg vs all the other variables in the data set:
+
+```{r lmmpgvsall}
+fit2 <- lm(mpg ~ ., data = mtcars)
+summary(fit2)
+  
+```
+This model increases the R-squared but this could be due to the mere adding of variables, and also none of the variables are significant enough. We now perform a stepwise regression to find a better model with the help of the stepAIC function which selects a best model by using Akaike Information Criterion: 
+
+```{r stepwise, results='hide', echo=TRUE}
+# Stepwise Regression
+library(MASS)
+fit3 <- lm(mpg~.,data=mtcars)
+step <- stepAIC(fit3, direction="both")
+```
+
+```{r summary of step}
+summary(step)
+confint(step)
+```
+
+This model explains roughly 85% of the variation in mpg. It includes weight (wt) 1/4 mile time (qsec) and Transmission (am). The coefficient of amManual is 2.9358 which means that with equal weight (wt) and equal 1/4 mile time (qsec), cars with manual transmission have an increase of 2.9358 miles per gallon. 
+
+## Conclusions
+
+ *  Cars with a manual transmission are better for fuel consumption measured by miles per galon than cars with an automatic transmission. 
+ *  The best model we found indicates that 85% of the variation in mpg is explained by type of transmission, weight and acceleration measured by 1/4 mile time. 
+ * The increase in mpg with respect to transmission type, leaving other variables equal, is 2.9358 and we are 95% confident that this value lies between 0.0457 and 5.825.      
+
+## Appendix
+
+Checking the best model assumptions:
+
+```{r residualplot, fig.height=7, echo=FALSE}
+par(mfrow=c(2,2))
+plot(step)
+```
+
+We conclude that the distribution of the residuals is roughly normal and we do have Homoscedasticity.
