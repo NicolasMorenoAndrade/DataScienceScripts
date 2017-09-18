@@ -46,3 +46,18 @@ sapply(folds, length)
 set.seed(32323)
 folds <-createResample(y=spam$type, times=10, list=TRUE)
 sapply(folds, length)
+
+
+# Training options --------------------------------------------------------
+
+## Default S3 method:
+# train(x, y, method = "rf", preProcess = NULL, ...,
+#       weights = NULL, metric = ifelse(is.factor(y), "Accuracy", "RMSE"),
+#       maximize = ifelse(metric %in% c("RMSE", "logLoss", "MAE"), FALSE, TRUE),
+#       trControl = trainControl(), tuneGrid = NULL,
+#       tuneLength = ifelse(trControl$method == "none", 1, 3))
+
+
+#metric options are "RMSE" (root mean squared error) and "RSquared" (R²) for continous 
+# outcomes and "Accuracy" (fraction correct) an "Kappa" (measure of concordance) for
+# categorical outcomes
