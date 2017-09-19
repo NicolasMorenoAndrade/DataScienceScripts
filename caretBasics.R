@@ -61,3 +61,75 @@ sapply(folds, length)
 #metric options are "RMSE" (root mean squared error) and "RSquared" (R²) for continous 
 # outcomes and "Accuracy" (fraction correct) an "Kappa" (measure of concordance) for
 # categorical outcomes
+
+args(trainControl)
+# function (method = "boot", number = ifelse(grepl("cv", method), 10, 25), 
+#           repeats = ifelse(grepl("[d_]cv$", method), 1, NA), 
+#           p = 0.75, search = "grid", initialWindow = NULL, horizon = 1, 
+#           fixedWindow = TRUE, skip = 0, verboseIter = FALSE, returnData = TRUE, 
+#           returnResamp = "final", savePredictions = FALSE, classProbs = FALSE, 
+#           summaryFunction = defaultSummary, selectionFunction = "best", 
+#           preProcOptions = list(thresh = 0.95, ICAcomp = 3, k = 5, 
+#                             freqCut = 95/5, uniqueCut = 10, cutoff = 0.9), 
+#           sampling = NULL, 
+#           index = NULL, indexOut = NULL, indexFinal = NULL, timingSamps = 0, 
+#           predictionBounds = rep(FALSE, 2), seeds = NA, 
+#           adaptive = list(min = 5, alpha = 0.05, method = "gls", complete = TRUE), 
+#           trim = FALSE, allowParallel = TRUE) 
+
+
+# Plotting Predictors -----------------------------------------------------
+
+library(ISLR)
+library(ggplot2)
+
+data(Wage)
+summary(Wage)
+
+inTrain <- createDataPartition(y = Wage$wage, p = 0.7, list = FALSE)
+training <- Wage[inTrain,]
+testing <- Wage[-inTrain,]
+
+dim(training); dim(testing)
+
+# feature plot (caret package)
+featurePlot(x = training[,c("age", "education", "jobclass")],
+            y = training$wage,
+            plot = "pairs")
+
+# qplot (ggplot2)
+qplot(x=training$age, y=training$wage)
+
+# Use qplot to try to quickly figure out why the outliers
+qplot(age, wage, data = training, color=jobclass)
+
+# add regression smoothers
+qq <- qplot(age, wage, data = training, color=education)
+qq + geom_smooth(method = 'lm', formula=y~x) 
+
+# cut2 making factors (Hmisc package)
+library(Hmisc)
+cutWage <- cut2(training$wage, g=3)
+table(cutWage)  
+
+T1 <- table(cutWage, training$jobclass)
+T1
+
+# proportions table
+prop.table(T1,1)
+
+#boxplots with the new factors
+p1 <-  qplot(cutWage, age, data = training, fill = cutWage, geom = c("boxplot"))
+p1
+
+#adding points on top of the boxplots
+p2 <-  qplot(cutWage, age, data = training, fill = cutWage, 
+             geom = c("boxplot","jitter"))
+p2
+
+# use of grid arrange
+library(gridExtra)
+grid.arrange(p1,p2, ncol=2)
+
+# density plots with qplot
+qplot(wage, color=education, data = training, geom = "density")
