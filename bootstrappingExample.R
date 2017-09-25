@@ -24,12 +24,12 @@ sd(medians)
 
 #confidence interval for the medians
 quantile(medians, c(0.025,0.975))
-#     2.5%    97.5% 
-# 68.43713 68.81509 
+#     2.5%    97.5%
+# 68.43713 68.81509
 
 #Histogram of bootsrap resamples
 g <- ggplot(data.frame(medians = medians), aes(x = medians))
-g <- g + geom_histogram(color = "black", 
-                        fill = "lightblue", 
+g <- g + geom_histogram(color = "black",
+                        fill = "lightblue",
                         binwidth = 0.05)
 print(g)
