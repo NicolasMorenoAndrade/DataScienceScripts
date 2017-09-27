@@ -1,6 +1,7 @@
 library(caret)
 library(kernlab) 
 
+
 # Splitting spam data into train test sets
 data(spam)
 inTrain <- createDataPartition(y=spam$type, p=0.75, list=FALSE)
