@@ -41,7 +41,7 @@ sd(trainCapAveS) # 1
 
 testCapAve <- testing$capitalAve
 testCapAveS <- (testCapAve-mean(trainCapAve))/sd(trainCapAve)
-mean(testCapAveS) # WILL not be zero
+mean(testCapAveS) # WILL not be zero since we are standardizing with traning set mean and sd
 sd(testCapAveS)  # WILL not be 1
 
 
@@ -99,7 +99,7 @@ training$capAveNA <- training$capitalAve
 selectNA <- rbinom(dim(training)[1], size = 1, prob = 0.05) == 1
 training$capAveNA[selectNA] <- NA
 
-# Impute and standardize (impute using k-nearest neighbors)
+# Impute and standardize (impute using k-nearest neighbors) NOTE: preprocess has center + scale as default
 preObj <- preProcess(training[,-58], method = c("knnImpute"))
 capAve <- predict(preObj, training[,-58])$capAveNA
 
@@ -114,6 +114,10 @@ quantile(capAve - capAveTruth)
 quantile((capAve - capAveTruth)[selectNA])
 
 # Principal Components Analysis -------------------------------------------
+
+training <- spam[inTrain,]
+testing <- spam[-inTrain,]
+
 
 # FIRST we find which variables have a correlation bigger than 0.8
 M <- abs(cor(training[,-58])) #column 58 is the output ("type" two levels: "spam" "nospam")
