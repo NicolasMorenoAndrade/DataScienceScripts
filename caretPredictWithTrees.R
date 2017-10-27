@@ -13,7 +13,7 @@ testing <- iris[-inTrain,]
 dim(training); dim(testing)
 
 ## Exploratory
-qplot(x = Petal.Width, y = Sepal.Width, color = Species, data = training,)
+qplot(x = Petal.Width, y = Sepal.Width, color = Species, data = training)
 
 ## Train and plot the tree model -----------------------------------------------------------------
 
@@ -27,9 +27,9 @@ print(modFit$finalModel)
 plot(modFit$finalModel, uniform=TRUE, main="Classification Tree")
 text(modFit$finalModel, use.n = TRUE, all = TRUE, cex = .8)
 
-## library(rattle)
-## library(rpart.plot)
-## fancyRpartPlot(modFit$finalModel)
+library(rattle)
+library(rpart.plot)
+fancyRpartPlot(modFit$finalModel)
 
 ## Predict with tree -----------------------------------------------------------------
 predict(modFit, newdata = testing)

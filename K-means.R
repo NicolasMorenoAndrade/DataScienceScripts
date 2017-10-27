@@ -35,12 +35,12 @@ points(x,y,pch=19, cex=2, col=cols1[newClust])
 #x-coordinates
 newCx <- tapply(x,newClust,mean)
 # 1        2        3
-# 1.210767 1.010320 2.498011 
+# 1.210767 1.010320 2.498011
 
 #y-coordinates
 newCy <- tapply(y,newClust,mean)
-# 1        2        3 
-# 1.730555 1.016513 1.354373 
+# 1        2        3
+# 1.730555 1.016513 1.354373
 
 points(newCx,newCy,col=cols1,pch=8,cex=2,lwd=2)
 
