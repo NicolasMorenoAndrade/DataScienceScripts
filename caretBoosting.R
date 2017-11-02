@@ -10,6 +10,7 @@ training <-  Wage[inTrain, ]
 testing <- Wage[-inTrain, ]
 
 ## Fit the model
+## gbm := Stochastic Gradient Boosting
 modFit <- train(wage ~ ., method = "gbm", data = training, verbose = FALSE)
 print(modFit)
 
