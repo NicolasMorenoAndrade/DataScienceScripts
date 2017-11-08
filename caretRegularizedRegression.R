@@ -24,6 +24,8 @@ x <- x[train.ind,]
 
 p <- length(covnames)
 rss <- list()
+
+## Predict with all possible models (all possible combinations of predictors (covariates))
 for (i in 1:p) {
   cat(i)
   Index <- combn(p,i)
