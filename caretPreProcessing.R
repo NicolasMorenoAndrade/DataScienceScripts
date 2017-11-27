@@ -67,12 +67,12 @@ sd(testCapAveS)
 
 # PASSING preProcess as an ARGUMENT to caret::train function
 set.seed(32343)
-modelFit <- train(type ~., data = training, preProcess=c("center", "scale"),
+modelFit <- train(type ~., data = training,
+                  preProcess=c("center", "scale"),
                   method="glm")
 modelFit
-
-# Box Cox Transform -------------------------------------------------------
-
+modelFit$finalModel
+# Box Transform Cox -------------------------------------------------------
 
 # A Box Cox transformation is a way to transform non-normal dependent variables into a
 # normal shape. Normality is an important assumption for many statistical techniques;

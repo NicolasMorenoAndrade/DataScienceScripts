@@ -80,7 +80,7 @@ all.equal(manualpred, caretpred)
 library(ISLR)
 library(ggplot2)
 
-data(wage)
+data(Wage)
 
 Wage <- subset(Wage, select=-c(logwage))
 summary(Wage)
@@ -113,6 +113,7 @@ finMod <- modFit$finalModel
 print(modFit)
 
 ## Diagnostics
+par(mfrow = c(1,2))
 plot(finMod, pch = 19, cex = 0.5, col = "#00000010")
 
 ## Color by variables not used in the model

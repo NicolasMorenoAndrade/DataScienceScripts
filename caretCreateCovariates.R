@@ -34,7 +34,8 @@ bsBasis
 
 lm1 <- lm(wage ~ bsBasis, data = training)
 plot(training$age, training$wage, pch = 19, cex = 0.5)
-points(training$age, predict(lm1, newdata = training), col = "red", pch = 19, cex = 0.5)
+points(training$age, predict(lm1, newdata = training),
+       col = "red", pch = 19, cex = 0.5)
 
 ## Splines on the test set
 
