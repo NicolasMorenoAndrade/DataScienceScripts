@@ -24,9 +24,14 @@ form <- as.formula(paste("LogSalary~",
                          paste(predictors, collapse="+"), sep=""))
 salaryTree <- tree(form, data = hittersSalary)
 summary(salaryTree)
-
 plot(salaryTree)
 text(salaryTree, pretty = 0)
 
+
+islrTree <- tree(LogSalary~Years+Hits, data=hittersSalary)
+plot(islrTree)
+text(islrTree, pretty = 0)
+
 set.seed (3)
-cvsalarytree = cv.tree(salaryTree, FUN = prune.misclass)
+## cvsalarytree <- cv.tree(salaryTree)
+## plot(cvsalarytree)
